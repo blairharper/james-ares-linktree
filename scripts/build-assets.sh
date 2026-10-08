@@ -48,7 +48,7 @@ npx --yes sharp-cli@5 -i src/brand/ja-favicon-180.png -o public/apple-touch-icon
 npx --yes sharp-cli@5 -i src/brand/ja-favicon-512.png -o public/icon-512.png          -f png --compressionLevel 9 --palette >/dev/null
 sed 's/<metadata>.*<\/metadata>//; s/ xmlns:c2pa="[^"]*"//' src/brand/ja-monogram-on-ink.svg > public/favicon.svg
 
-# Content-hash fonts + images (served immutable, see public/_headers) and rewrite refs in index.html
+# Content-hash fonts + images (served immutable, see public/_headers) and rewrite refs in index.html + og.html
 for f in public/fonts/*.woff2 public/img/*.*; do
   base=$(basename "$f"); stem=${base%%.*}; ext=${base##*.}
   [[ $base =~ ^[^.]+\.[0-9a-f]{8}\.[a-z0-9]+$ ]] && continue  # already hashed (old output)
@@ -56,7 +56,7 @@ for f in public/fonts/*.woff2 public/img/*.*; do
   dir=$(dirname "$f")
   find "$dir" -name "$stem.*.$ext" -delete
   mv "$f" "$dir/$stem.$hash.$ext"
-  sed -E -i '' "s#/${dir#public/}/$stem(\.[0-9a-f]{8})?\.$ext#/${dir#public/}/$stem.$hash.$ext#g" public/index.html
+  sed -E -i '' "s#/${dir#public/}/$stem(\.[0-9a-f]{8})?\.$ext#/${dir#public/}/$stem.$hash.$ext#g" public/index.html src/og.html
 done
 
 ls -l public/fonts public/img public/*.png public/*.svg
